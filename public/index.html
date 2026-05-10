@@ -397,7 +397,8 @@ select option { background: var(--dark3); }
               <div class="form-group"><label>Due date</label><input type="date" id="inv-due"></div>
             </div>
             <div class="form-row">
-              
+              <div class="form-group"><label>GST (%)</label><input type="number" id="inv-gst" value="18" min="0" max="100"></div>
+              <div class="form-group"><label>Discount (₹)</label><input type="number" id="inv-discount" value="0" min="0"></div>
             </div>
             <div class="form-row single">
               <div class="form-group">
@@ -449,12 +450,17 @@ select option { background: var(--dark3); }
             </table>
             <div class="inv-totals">
               <div class="inv-total-row"><span>Subtotal</span><span id="p-subtotal"></span></div>
+              <div class="inv-total-row" id="p-disc-row"><span>Discount</span><span id="p-disc"></span></div>
+              <div class="inv-total-row"><span>GST (<span id="p-gstpct"></span>%)</span><span id="p-gst"></span></div>
               <div class="inv-total-row final"><span>Total</span><span id="p-total"></span></div>
             </div>
             <div class="inv-note" id="p-note"></div>
           </div>
           <div style="display:none;margin-top:12px;text-align:right;" id="save-inv-row">
             <button class="btn btn-gold" onclick="saveInvoice()"><i class="ti ti-device-floppy"></i> Save invoice</button>
+          </div>
+          <div style="display:none;margin-top:8px;text-align:right;" id="print-inv-row">
+            <button class="btn" onclick="printInvoice()"><i class="ti ti-printer"></i> Print / Download PDF</button>
           </div>
         </div>
       </div>
@@ -506,14 +512,14 @@ select option { background: var(--dark3); }
       </div>
       <div style="margin-bottom:6px;"><label>Membership plan *</label></div>
       <div class="plan-grid">
-        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',2199)">
+        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',999)">
           <div class="pname">Monthly</div>
-          <div class="pprice">₹2,199</div>
+          <div class="pprice">₹999</div>
           <div class="pperiod">per month</div>
         </div>
-        <div class="plan-card" onclick="pickPlan(this,'Quarterly',5500)">
+        <div class="plan-card" onclick="pickPlan(this,'Quarterly',2699)">
           <div class="pname">Quarterly</div>
-          <div class="pprice">₹5500</div>
+          <div class="pprice">₹2,699</div>
           <div class="pperiod">per 3 months</div>
           <div class="psave">Save ₹298</div>
         </div>
@@ -576,7 +582,7 @@ function showConfirm(title, msg) {
       document.getElementById('confirm-overlay').classList.remove('open');
       confirmResolve = null;
       res(true);
-};
+    };
   });
 }
 function closeConfirm() {
@@ -741,7 +747,7 @@ async function loadInvoiceForm() {
   const sel = document.getElementById('inv-member');
   sel.innerHTML = '<option value="">— choose a member —</option>' +
     members.filter(m => m.status === 'Active').map(m =>
-      `<option value="${m.id}" data-price="${m.price}" data-plan="${m.plan}">${m.name} (${m.plan})</option>`
+      `<option value="${m.id}" data-price="${m.price}" data-plan="${m.plan}" data-phone="${m.phone}">${m.name} (${m.plan})</option>`
     ).join('');
   document.getElementById('inv-date').value = today();
   const due = new Date(); due.setDate(due.getDate() + 7);
@@ -756,18 +762,18 @@ function generateInvoice() {
   const memberName = opt.text.split(' (')[0];
   const memberPlan = opt.dataset.plan;
   const memberPrice = parseInt(opt.dataset.price);
-  const memberPhone = '—';
+  const memberPhone = opt.dataset.phone || '—';
 
   const invDate = document.getElementById('inv-date').value;
   const invDue = document.getElementById('inv-due').value;
-  const gstPct = 0;
-  const discount = 0;
+  const gstPct = parseFloat(document.getElementById('inv-gst').value) || 0;
+  const discount = parseFloat(document.getElementById('inv-discount').value) || 0;
   const status = document.getElementById('inv-status').value;
   const notes = document.getElementById('inv-notes').value.trim();
   const subtotal = memberPrice;
   const discounted = subtotal - discount;
-  const gstAmt = 0;
-  const total = subtotal;
+  const gstAmt = Math.round(discounted * gstPct / 100);
+  const total = discounted + gstAmt;
 
   const invNum = 'INV-' + String(Date.now()).slice(-6);
   document.getElementById('p-num').textContent = invNum;
@@ -785,17 +791,14 @@ function generateInvoice() {
     `<tr><td>${memberPlan} Membership (${period})</td><td class="r">${fmt(subtotal)}</td></tr>`;
 
   document.getElementById('p-subtotal').textContent = fmt(subtotal);
-  document.getElementById('p-disc-row').style.display = discount > 0 ? 'flex' : 'none';
-  document.getElementById('p-disc').textContent = '−' + fmt(discount);
-  document.getElementById('p-gstpct').textContent = gstPct;
-  document.getElementById('p-gst').textContent = fmt(gstAmt);
   document.getElementById('p-total').textContent = fmt(total);
   document.getElementById('p-note').textContent = notes ? 'Note: ' + notes : '';
 
   document.getElementById('invoice-paper').classList.add('show');
   document.getElementById('save-inv-row').style.display = 'block';
+  document.getElementById('print-inv-row').style.display = 'block';
 
-  pendingInvoice = { memberId, memberName, memberPhone, memberPlan, invoiceDate: invDate, dueDate: invDue, gstPct : 0, discount : 0, status, notes, subtotal, gstAmt : 0, total };
+  pendingInvoice = { memberId, memberName, memberPhone, memberPlan, invoiceDate: invDate, dueDate: invDue, gstPct, discount, status, notes, subtotal, gstAmt, total };
 }
 
 async function saveInvoice() {
@@ -805,8 +808,45 @@ async function saveInvoice() {
     toast('Invoice saved to billing history');
     document.getElementById('invoice-paper').classList.remove('show');
     document.getElementById('save-inv-row').style.display = 'none';
+    document.getElementById('print-inv-row').style.display = 'none';
     pendingInvoice = null;
   } catch (e) { toast(e.message, 'error'); }
+}
+
+function printInvoice() {
+  const content = document.getElementById('invoice-paper').innerHTML;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Invoice — Royal Fitness Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; padding: 2.5rem; color: #1a1a1a; max-width: 720px; margin: auto; }
+    .inv-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+    .inv-brand { font-family: 'Playfair Display', serif; font-size: 22px; color: #1a1a1a; }
+    .inv-brand-sub { font-size: 12px; color: #888; margin-top: 3px; }
+    .inv-num { font-size: 24px; font-weight: 500; text-align: right; }
+    .inv-num-sub { font-size: 12px; color: #888; text-align: right; margin-top: 4px; }
+    .inv-parties { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+    .inv-party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 6px; }
+    .inv-party-name { font-size: 15px; font-weight: 500; }
+    .inv-party-detail { font-size: 13px; color: #666; margin-top: 2px; }
+    .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    .inv-table th { border-bottom: 1.5px solid #1a1a1a; padding: 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #555; }
+    .inv-table td { padding: 12px 0; border-bottom: 0.5px solid #eee; font-size: 13px; color: #333; }
+    .r { text-align: right; }
+    .inv-totals { border-top: 1.5px solid #1a1a1a; padding-top: 12px; }
+    .inv-total-row { display: flex; justify-content: flex-end; gap: 48px; font-size: 13px; color: #555; padding: 3px 0; }
+    .inv-total-row.final { font-size: 16px; font-weight: 600; color: #1a1a1a; padding-top: 8px; margin-top: 4px; border-top: 0.5px solid #eee; }
+    .inv-note { margin-top: 1.5rem; font-size: 12px; color: #888; border-top: 0.5px solid #eee; padding-top: 1rem; }
+    .inv-status-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; margin-top: 6px; }
+    .inv-status-paid { background: #e6f7ef; color: #1a7a4a; }
+    .inv-status-pending { background: #fff7e6; color: #b06a10; }
+    .inv-status-overdue { background: #fdf0f0; color: #c0392b; }
+    @media print { body { padding: 1rem; } }
+  </style></head><body>${content}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 600);
 }
 
 // ── History ────────────────────────────────────────────
