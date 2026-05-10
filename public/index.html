@@ -512,22 +512,22 @@ select option { background: var(--dark3); }
       </div>
       <div style="margin-bottom:6px;"><label>Membership plan *</label></div>
       <div class="plan-grid">
-        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',2199)">
+        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',2299)">
           <div class="pname">Monthly</div>
-          <div class="pprice">₹2,199</div>
+          <div class="pprice">₹2,299</div>
           <div class="pperiod">per month</div>
         </div>
-        <div class="plan-card" onclick="pickPlan(this,'Quarterly',5699)">
+        <div class="plan-card" onclick="pickPlan(this,'Quarterly',5799)">
           <div class="pname">Quarterly</div>
-          <div class="pprice">₹5,699</div>
+          <div class="pprice">₹5,799</div>
           <div class="pperiod">per 3 months</div>
-          <div class="psave">Save ₹1,989</div>
+          
         </div>
-        <div class="plan-card" onclick="pickPlan(this,'Annual',10999)">
+        <div class="plan-card" onclick="pickPlan(this,'Annual',11999)">
           <div class="pname">Annual</div>
-          <div class="pprice">₹10,999</div>
+          <div class="pprice">₹11,999</div>
           <div class="pperiod">per year</div>
-          <div class="psave">Save ₹1,989</div>
+          
         </div>
       </div>
     </div>
@@ -555,7 +555,7 @@ select option { background: var(--dark3); }
 
 <script>
 const API = '';
-let selectedPlan = { name: 'Monthly', price: 2199 };
+let selectedPlan = { name: 'Monthly', price: 2299 };
 let pendingInvoice = null;
 
 // ── Utilities ──────────────────────────────────────────
@@ -676,7 +676,7 @@ function openAddMember() {
   document.getElementById('m-joindate').value = today();
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
   document.querySelector('.plan-card').classList.add('selected');
-  selectedPlan = { name: 'Monthly', price: 2199 };
+  selectedPlan = { name: 'Monthly', price: 2299 };
   openModal('modal-member');
 }
 

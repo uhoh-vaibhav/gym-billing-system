@@ -35,9 +35,9 @@ Then open your browser at: **http://localhost:3000**
 - Add, edit, and delete members
 - Toggle Active / Inactive status
 - Three membership plans:
-  - Monthly — ₹2199/month
-  - Quarterly — ₹5699
-  - Annual — ₹10,999 
+  - Monthly — ₹2299/month
+  - Quarterly — ₹5799
+  - Annual — ₹11,999 
 
 ### New Invoice
 - Generate invoices for any active member
