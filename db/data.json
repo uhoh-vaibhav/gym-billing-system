@@ -1,0 +1,16 @@
+{
+  "members": [
+    {
+      "id": "e81717a8-81a1-4d1d-b218-1315286e54db",
+      "name": "Vaibhav Sahu",
+      "phone": "8840932330",
+      "email": "",
+      "joinDate": "2026-05-10",
+      "plan": "Monthly",
+      "price": 999,
+      "status": "Inactive",
+      "createdAt": "2026-05-10T08:50:44.890Z"
+    }
+  ],
+  "invoices": []
+}

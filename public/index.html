@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Fitness Club — Billing</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #F0D98A;
+  --gold-dim: #7A6230;
+  --dark: #0F0E0C;
+  --dark2: #1A1916;
+  --dark3: #242320;
+  --dark4: #2E2D29;
+  --surface: #1E1D1A;
+  --border: rgba(201,168,76,0.18);
+  --border-strong: rgba(201,168,76,0.38);
+  --text: #F2EDE4;
+  --text-muted: #8A8478;
+  --text-dim: #5A5650;
+  --red: #E05252;
+  --green: #5CB88A;
+  --amber: #D4924A;
+  --blue: #5A9FD4;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 400; min-height: 100vh; display: flex; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px; min-height: 100vh; background: var(--dark2);
+  border-right: 0.5px solid var(--border); display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+}
+.sidebar-brand {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.brand-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.brand-icon i { font-size: 20px; color: var(--dark); }
+.brand-name { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--gold); letter-spacing: 0.02em; line-height: 1.3; }
+.brand-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px; }
+
+.nav { padding: 1rem 0.75rem; flex: 1; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  border-radius: var(--radius); cursor: pointer; font-size: 14px;
+  color: var(--text-muted); margin-bottom: 2px; transition: all 0.15s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item i { font-size: 18px; }
+.nav-item:hover { background: var(--dark3); color: var(--text); }
+.nav-item.active { background: rgba(201,168,76,0.12); color: var(--gold); }
+.nav-item.active i { color: var(--gold); }
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 0.5px solid var(--border);
+  font-size: 12px; color: var(--text-dim);
+}
+.sidebar-footer .date-str { color: var(--text-muted); margin-top: 2px; }
+
+/* Main */
+.main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  padding: 1.25rem 2rem; border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--dark); position: sticky; top: 0; z-index: 50;
+}
+.page-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); }
+.page-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.content { padding: 2rem; flex: 1; }
+
+/* Stat cards */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 2rem; }
+.stat-card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--border-strong); }
+.stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+.stat-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--text); }
+.stat-val.gold { color: var(--gold); }
+.stat-val.green { color: var(--green); }
+.stat-val.red { color: var(--red); }
+.stat-icon { float: right; margin-top: -2px; }
+.stat-icon i { font-size: 20px; color: var(--text-dim); }
+
+/* Buttons */
+.btn {
+  padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 0.5px solid var(--border-strong); background: transparent;
+  color: var(--text); font-family: 'DM Sans', sans-serif; display: inline-flex;
+  align-items: center; gap: 6px; transition: all 0.15s; text-decoration: none;
+}
+.btn:hover { background: var(--dark3); }
+.btn-gold { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 500; }
+.btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); }
+.btn-danger { color: var(--red); border-color: rgba(224,82,82,0.3); }
+.btn-danger:hover { background: rgba(224,82,82,0.1); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-xs { padding: 3px 9px; font-size: 11px; }
+
+/* Table */
+.card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.card-header {
+  padding: 1rem 1.25rem; border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 500; color: var(--text); }
+.card-body { padding: 0; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { padding: 10px 14px; text-align: left; font-size: 10.5px; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 0.5px solid var(--border); }
+td { padding: 12px 14px; border-bottom: 0.5px solid rgba(201,168,76,0.07); color: var(--text-muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+td.name { color: var(--text); font-weight: 500; }
+
+/* Badge */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.badge-active { background: rgba(92,184,138,0.15); color: var(--green); }
+.badge-inactive { background: rgba(90,86,80,0.3); color: var(--text-dim); }
+.badge-monthly { background: rgba(90,159,212,0.15); color: var(--blue); }
+.badge-quarterly { background: rgba(201,168,76,0.15); color: var(--gold); }
+.badge-annual { background: rgba(92,184,138,0.15); color: var(--green); }
+.badge-paid { background: rgba(92,184,138,0.15); color: var(--green); }
+.badge-pending { background: rgba(212,146,74,0.15); color: var(--amber); }
+.badge-overdue { background: rgba(224,82,82,0.15); color: var(--red); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  z-index: 200; align-items: center; justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--dark2); border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-lg); width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto; margin: 1rem;
+}
+.modal-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text); }
+.modal-body { padding: 1.5rem; }
+.modal-footer { padding: 1rem 1.5rem; border-top: 0.5px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Form */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+input, select, textarea {
+  background: var(--dark3); border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius); padding: 9px 12px; font-size: 14px;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s; outline: none; width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+input::placeholder { color: var(--text-dim); }
+select option { background: var(--dark3); }
+
+/* Plan picker */
+.plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.plan-card {
+  border: 0.5px solid var(--border); border-radius: var(--radius);
+  padding: 12px; cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.plan-card:hover { border-color: var(--border-strong); }
+.plan-card.selected { border: 1.5px solid var(--gold); background: rgba(201,168,76,0.08); }
+.plan-card .pname { font-size: 13px; font-weight: 500; color: var(--text); }
+.plan-card .pprice { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold); margin: 6px 0 2px; }
+.plan-card .pperiod { font-size: 11px; color: var(--text-dim); }
+.plan-card .psave { font-size: 11px; color: var(--green); margin-top: 4px; }
+
+/* Invoice */
+.invoice-paper {
+  background: #fff; color: #1a1a1a;
+  border-radius: var(--radius-lg); padding: 2rem;
+  font-family: 'DM Sans', sans-serif;
+  display: none;
+}
+.invoice-paper.show { display: block; }
+.inv-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+.inv-brand { font-family: 'Playfair Display', serif; font-size: 22px; color: #1a1a1a; }
+.inv-brand-sub { font-size: 12px; color: #888; margin-top: 3px; }
+.inv-num { font-size: 24px; font-weight: 500; color: #1a1a1a; text-align: right; }
+.inv-num-sub { font-size: 12px; color: #888; text-align: right; margin-top: 4px; }
+.inv-parties { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+.inv-party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 6px; }
+.inv-party-name { font-size: 15px; font-weight: 500; color: #1a1a1a; }
+.inv-party-detail { font-size: 13px; color: #666; margin-top: 2px; }
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+.inv-table th { border-bottom: 1.5px solid #1a1a1a; padding: 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #555; }
+.inv-table td { padding: 12px 0; border-bottom: 0.5px solid #eee; font-size: 13px; color: #333; }
+.inv-table .r { text-align: right; }
+.inv-totals { border-top: 1.5px solid #1a1a1a; padding-top: 12px; }
+.inv-total-row { display: flex; justify-content: flex-end; gap: 48px; font-size: 13px; color: #555; padding: 3px 0; }
+.inv-total-row.final { font-size: 16px; font-weight: 600; color: #1a1a1a; padding-top: 8px; margin-top: 4px; border-top: 0.5px solid #eee; }
+.inv-note { margin-top: 1.5rem; font-size: 12px; color: #888; border-top: 0.5px solid #eee; padding-top: 1rem; }
+.inv-status-chip {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; margin-top: 6px;
+}
+.inv-status-paid { background: #e6f7ef; color: #1a7a4a; }
+.inv-status-pending { background: #fff7e6; color: #b06a10; }
+.inv-status-overdue { background: #fdf0f0; color: #c0392b; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--dark3); border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius); padding: 12px 16px; font-size: 13px;
+  color: var(--text); display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4); animation: slideIn 0.2s ease;
+  min-width: 240px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+@keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Empty */
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); }
+.empty-state i { font-size: 36px; margin-bottom: 12px; display: block; color: var(--text-dim); }
+.empty-state p { font-size: 14px; }
+
+/* Panels */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Loading */
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Confirm dialog */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 300; align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: var(--dark2); border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-lg); padding: 1.5rem; max-width: 360px; width: 100%; margin: 1rem;
+}
+.confirm-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+.confirm-msg { font-size: 13px; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
+.confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon"><i class="ti ti-barbell"></i></div>
+    <div class="brand-name">Royal Fitness Club</div>
+    <div class="brand-sub">Billing System</div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" onclick="showPanel('dashboard')">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </button>
+    <button class="nav-item" onclick="showPanel('members')">
+      <i class="ti ti-users"></i> Members
+    </button>
+    <button class="nav-item" onclick="showPanel('invoices')">
+      <i class="ti ti-file-invoice"></i> New Invoice
+    </button>
+    <button class="nav-item" onclick="showPanel('history')">
+      <i class="ti ti-history"></i> Billing History
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div>Royal Fitness Club</div>
+    <div class="date-str" id="sidebar-date"></div>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="page-sub">Overview of your gym</div>
+    </div>
+    <div class="topbar-actions" id="topbar-actions"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid" id="dash-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total members <span class="stat-icon"><i class="ti ti-users"></i></span></div>
+          <div class="stat-val gold" id="d-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active members <span class="stat-icon"><i class="ti ti-user-check"></i></span></div>
+          <div class="stat-val" id="d-active">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Monthly revenue <span class="stat-icon"><i class="ti ti-trending-up"></i></span></div>
+          <div class="stat-val green" id="d-rev">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total invoices <span class="stat-icon"><i class="ti ti-file-invoice"></i></span></div>
+          <div class="stat-val" id="d-inv">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Amount collected <span class="stat-icon"><i class="ti ti-cash"></i></span></div>
+          <div class="stat-val green" id="d-collected">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Outstanding <span class="stat-icon"><i class="ti ti-alert-circle"></i></span></div>
+          <div class="stat-val red" id="d-outstanding">—</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent members</span></div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Name</th><th>Plan</th><th>Status</th></tr></thead>
+              <tbody id="dash-members"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent invoices</span></div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Member</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody id="dash-invoices"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="panel" id="panel-members">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All members</span>
+          <button class="btn btn-gold btn-sm" onclick="openAddMember()"><i class="ti ti-plus"></i> Add member</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Plan</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+            <tbody id="members-tbody"></tbody>
+          </table>
+          <div class="empty-state" id="members-empty" style="display:none">
+            <i class="ti ti-users"></i>
+            <p>No members yet. Add your first member.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW INVOICE -->
+    <div class="panel" id="panel-invoices">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Invoice details</span></div>
+          <div class="card-body" style="padding:1.25rem;">
+            <div class="form-row">
+              <div class="form-group" style="grid-column:1/-1">
+                <label>Select member</label>
+                <select id="inv-member"><option value="">— choose a member —</option></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Invoice date</label><input type="date" id="inv-date"></div>
+              <div class="form-group"><label>Due date</label><input type="date" id="inv-due"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>GST (%)</label><input type="number" id="inv-gst" value="18" min="0" max="100"></div>
+              <div class="form-group"><label>Discount (₹)</label><input type="number" id="inv-discount" value="0" min="0"></div>
+            </div>
+            <div class="form-row single">
+              <div class="form-group">
+                <label>Payment status</label>
+                <select id="inv-status">
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Overdue">Overdue</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row single">
+              <div class="form-group"><label>Notes</label><input type="text" id="inv-notes" placeholder="e.g. Locker included, first month free..."></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+              <button class="btn btn-gold" onclick="generateInvoice()"><i class="ti ti-eye"></i> Preview invoice</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="invoice-preview-wrap">
+          <div class="invoice-paper" id="invoice-paper">
+            <div class="inv-header-row">
+              <div>
+                <div class="inv-brand">Royal Fitness Club</div>
+                <div class="inv-brand-sub">Lucknow, Uttar Pradesh · info@royalfitness.in</div>
+              </div>
+              <div>
+                <div class="inv-num" id="p-num">INVOICE</div>
+                <div class="inv-num-sub" id="p-date"></div>
+              </div>
+            </div>
+            <div class="inv-parties">
+              <div>
+                <div class="inv-party-label">Billed to</div>
+                <div class="inv-party-name" id="p-name"></div>
+                <div class="inv-party-detail" id="p-phone"></div>
+                <div class="inv-party-detail" id="p-plan"></div>
+              </div>
+              <div style="text-align:right">
+                <div class="inv-party-label">Due date</div>
+                <div class="inv-party-name" id="p-due"></div>
+                <div id="p-status"></div>
+              </div>
+            </div>
+            <table class="inv-table">
+              <thead><tr><th>Description</th><th class="r">Amount</th></tr></thead>
+              <tbody id="p-tbody"></tbody>
+            </table>
+            <div class="inv-totals">
+              <div class="inv-total-row"><span>Subtotal</span><span id="p-subtotal"></span></div>
+              <div class="inv-total-row" id="p-disc-row"><span>Discount</span><span id="p-disc"></span></div>
+              <div class="inv-total-row"><span>GST (<span id="p-gstpct"></span>%)</span><span id="p-gst"></span></div>
+              <div class="inv-total-row final"><span>Total</span><span id="p-total"></span></div>
+            </div>
+            <div class="inv-note" id="p-note"></div>
+          </div>
+          <div style="display:none;margin-top:12px;text-align:right;" id="save-inv-row">
+            <button class="btn btn-gold" onclick="saveInvoice()"><i class="ti ti-device-floppy"></i> Save invoice</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="panel" id="panel-history">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem;">
+        <div class="stat-card"><div class="stat-label">Total invoices</div><div class="stat-val gold" id="h-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Collected</div><div class="stat-val green" id="h-collected">—</div></div>
+        <div class="stat-card"><div class="stat-label">Outstanding</div><div class="stat-val red" id="h-outstanding">—</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All invoices</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>#</th><th>Member</th><th>Plan</th><th>Amount</th><th>Date</th><th>Due</th><th>Status</th><th></th></tr></thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+          <div class="empty-state" id="history-empty" style="display:none">
+            <i class="ti ti-file-invoice"></i>
+            <p>No invoices yet. Generate your first invoice.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Add Member Modal -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-member-title">Add member</div>
+      <button class="btn btn-sm" onclick="closeModal('modal-member')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-member-id">
+      <div class="form-row">
+        <div class="form-group"><label>Full name *</label><input type="text" id="m-name" placeholder="e.g. Aarav Singh"></div>
+        <div class="form-group"><label>Phone *</label><input type="text" id="m-phone" placeholder="e.g. 9876543210"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="m-email" placeholder="email@example.com"></div>
+        <div class="form-group"><label>Join date</label><input type="date" id="m-joindate"></div>
+      </div>
+      <div style="margin-bottom:6px;"><label>Membership plan *</label></div>
+      <div class="plan-grid">
+        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',999)">
+          <div class="pname">Monthly</div>
+          <div class="pprice">₹999</div>
+          <div class="pperiod">per month</div>
+        </div>
+        <div class="plan-card" onclick="pickPlan(this,'Quarterly',2699)">
+          <div class="pname">Quarterly</div>
+          <div class="pprice">₹2,699</div>
+          <div class="pperiod">per 3 months</div>
+          <div class="psave">Save ₹298</div>
+        </div>
+        <div class="plan-card" onclick="pickPlan(this,'Annual',9999)">
+          <div class="pname">Annual</div>
+          <div class="pprice">₹9,999</div>
+          <div class="pperiod">per year</div>
+          <div class="psave">Save ₹1,989</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-member')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveMember()"><i class="ti ti-check"></i> Save member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-actions">
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const API = '';
+let selectedPlan = { name: 'Monthly', price: 999 };
+let pendingInvoice = null;
+
+// ── Utilities ──────────────────────────────────────────
+function fmt(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+function fmtDate(d) { if (!d) return ''; return new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<i class="ti ti-${type === 'success' ? 'check' : 'alert-circle'}"></i> ${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+let confirmResolve = null;
+function confirm(title, msg) {
+  return new Promise(res => {
+    confirmResolve = res;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-msg').textContent = msg;
+    document.getElementById('confirm-overlay').classList.add('open');
+    document.getElementById('confirm-ok').onclick = () => { closeConfirm(); res(true); };
+  });
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  if (confirmResolve) { confirmResolve(false); confirmResolve = null; }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function api(method, path, body) {
+  const res = await fetch(API + path, {
+    method, headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Request failed'); }
+  return res.json();
+}
+
+// ── Panels ─────────────────────────────────────────────
+const panels = { dashboard: 'Dashboard', members: 'Members', invoices: 'New Invoice', history: 'Billing History' };
+const subs = { dashboard: 'Overview of your gym', members: 'Manage gym memberships', invoices: 'Generate a member invoice', history: 'All past billing records' };
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('page-title').textContent = panels[name];
+  document.getElementById('page-sub').textContent = subs[name];
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'members') loadMembers();
+  if (name === 'invoices') loadInvoiceForm();
+  if (name === 'history') loadHistory();
+}
+
+// ── Dashboard ──────────────────────────────────────────
+async function loadDashboard() {
+  const [stats, members, invoices] = await Promise.all([
+    api('GET', '/api/stats'),
+    api('GET', '/api/members'),
+    api('GET', '/api/invoices')
+  ]);
+  document.getElementById('d-total').textContent = stats.totalMembers;
+  document.getElementById('d-active').textContent = stats.activeMembers;
+  document.getElementById('d-rev').textContent = fmt(stats.monthlyRevenue);
+  document.getElementById('d-inv').textContent = stats.totalInvoices;
+  document.getElementById('d-collected').textContent = fmt(stats.collected);
+  document.getElementById('d-outstanding').textContent = fmt(stats.outstanding);
+
+  const dmb = document.getElementById('dash-members');
+  dmb.innerHTML = members.slice(-5).reverse().map(m =>
+    `<tr><td class="name">${m.name}</td><td><span class="badge badge-${m.plan.toLowerCase()}">${m.plan}</span></td><td><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span></td></tr>`
+  ).join('') || `<tr><td colspan="3"><div class="empty-state" style="padding:1rem"><p>No members yet</p></div></td></tr>`;
+
+  const dib = document.getElementById('dash-invoices');
+  dib.innerHTML = invoices.slice(-5).reverse().map(i =>
+    `<tr><td class="name">${i.memberName}</td><td>${fmt(i.total)}</td><td><span class="badge badge-${i.status.toLowerCase()}">${i.status}</span></td></tr>`
+  ).join('') || `<tr><td colspan="3"><div class="empty-state" style="padding:1rem"><p>No invoices yet</p></div></td></tr>`;
+}
+
+// ── Members ────────────────────────────────────────────
+async function loadMembers() {
+  const members = await api('GET', '/api/members');
+  const tbody = document.getElementById('members-tbody');
+  const empty = document.getElementById('members-empty');
+  if (!members.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = members.map(m => `
+    <tr>
+      <td class="name">${m.name}</td>
+      <td>${m.phone}</td>
+      <td style="color:var(--text-muted)">${m.email || '—'}</td>
+      <td><span class="badge badge-${m.plan.toLowerCase()}">${m.plan}</span></td>
+      <td style="color:var(--text-muted)">${fmtDate(m.joinDate)}</td>
+      <td><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span></td>
+      <td style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-xs" onclick="editMember('${m.id}')"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-xs" onclick="toggleMemberStatus('${m.id}','${m.status}')">${m.status === 'Active' ? '<i class="ti ti-user-off"></i>' : '<i class="ti ti-user-check"></i>'}</button>
+        <button class="btn btn-xs btn-danger" onclick="deleteMember('${m.id}','${m.name}')"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function openAddMember() {
+  document.getElementById('edit-member-id').value = '';
+  document.getElementById('modal-member-title').textContent = 'Add member';
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-phone').value = '';
+  document.getElementById('m-email').value = '';
+  document.getElementById('m-joindate').value = today();
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('.plan-card').classList.add('selected');
+  selectedPlan = { name: 'Monthly', price: 999 };
+  openModal('modal-member');
+}
+
+async function editMember(id) {
+  const members = await api('GET', '/api/members');
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('edit-member-id').value = id;
+  document.getElementById('modal-member-title').textContent = 'Edit member';
+  document.getElementById('m-name').value = m.name;
+  document.getElementById('m-phone').value = m.phone;
+  document.getElementById('m-email').value = m.email || '';
+  document.getElementById('m-joindate').value = m.joinDate;
+  document.querySelectorAll('.plan-card').forEach(c => {
+    const pname = c.querySelector('.pname').textContent;
+    c.classList.toggle('selected', pname === m.plan);
+  });
+  selectedPlan = { name: m.plan, price: m.price };
+  openModal('modal-member');
+}
+
+function pickPlan(el, name, price) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPlan = { name, price };
+}
+
+async function saveMember() {
+  const id = document.getElementById('edit-member-id').value;
+  const name = document.getElementById('m-name').value.trim();
+  const phone = document.getElementById('m-phone').value.trim();
+  const email = document.getElementById('m-email').value.trim();
+  const joinDate = document.getElementById('m-joindate').value;
+  if (!name || !phone) { toast('Name and phone are required', 'error'); return; }
+  try {
+    if (id) {
+      await api('PUT', `/api/members/${id}`, { name, phone, email, joinDate, plan: selectedPlan.name, price: selectedPlan.price });
+      toast('Member updated');
+    } else {
+      await api('POST', '/api/members', { name, phone, email, joinDate, plan: selectedPlan.name, price: selectedPlan.price });
+      toast('Member added');
+    }
+    closeModal('modal-member');
+    loadMembers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function toggleMemberStatus(id, current) {
+  const newStatus = current === 'Active' ? 'Inactive' : 'Active';
+  await api('PUT', `/api/members/${id}`, { status: newStatus });
+  toast('Status updated');
+  loadMembers();
+}
+
+async function deleteMember(id, name) {
+  const ok = await confirm('Delete member', `Remove "${name}" from the system? This cannot be undone.`);
+  if (!ok) return;
+  try {
+    await api('DELETE', `/api/members/${id}`);
+    toast('Member deleted');
+    loadMembers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ── Invoice Form ───────────────────────────────────────
+async function loadInvoiceForm() {
+  const members = await api('GET', '/api/members');
+  const sel = document.getElementById('inv-member');
+  sel.innerHTML = '<option value="">— choose a member —</option>' +
+    members.filter(m => m.status === 'Active').map(m =>
+      `<option value="${m.id}" data-price="${m.price}" data-plan="${m.plan}">${m.name} (${m.plan})</option>`
+    ).join('');
+  document.getElementById('inv-date').value = today();
+  const due = new Date(); due.setDate(due.getDate() + 7);
+  document.getElementById('inv-due').value = due.toISOString().split('T')[0];
+}
+
+function generateInvoice() {
+  const sel = document.getElementById('inv-member');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.value) { toast('Please select a member', 'error'); return; }
+  const memberId = opt.value;
+  const memberName = opt.text.split(' (')[0];
+  const memberPlan = opt.dataset.plan;
+  const memberPrice = parseInt(opt.dataset.price);
+  const memberPhone = '—';
+
+  const invDate = document.getElementById('inv-date').value;
+  const invDue = document.getElementById('inv-due').value;
+  const gstPct = parseFloat(document.getElementById('inv-gst').value) || 0;
+  const discount = parseFloat(document.getElementById('inv-discount').value) || 0;
+  const status = document.getElementById('inv-status').value;
+  const notes = document.getElementById('inv-notes').value.trim();
+  const subtotal = memberPrice;
+  const discounted = subtotal - discount;
+  const gstAmt = Math.round(discounted * gstPct / 100);
+  const total = discounted + gstAmt;
+
+  const invNum = 'INV-' + String(Date.now()).slice(-6);
+  document.getElementById('p-num').textContent = invNum;
+  document.getElementById('p-date').textContent = 'Date: ' + fmtDate(invDate);
+  document.getElementById('p-name').textContent = memberName;
+  document.getElementById('p-phone').textContent = memberPhone;
+  document.getElementById('p-plan').textContent = memberPlan + ' Membership';
+  document.getElementById('p-due').textContent = fmtDate(invDue);
+
+  const chips = { Paid: 'paid', Pending: 'pending', Overdue: 'overdue' };
+  document.getElementById('p-status').innerHTML = `<span class="inv-status-chip inv-status-${chips[status]}">${status}</span>`;
+
+  const period = memberPlan === 'Monthly' ? '1 month' : memberPlan === 'Quarterly' ? '3 months' : '12 months';
+  document.getElementById('p-tbody').innerHTML =
+    `<tr><td>${memberPlan} Membership (${period})</td><td class="r">${fmt(subtotal)}</td></tr>`;
+
+  document.getElementById('p-subtotal').textContent = fmt(subtotal);
+  document.getElementById('p-disc-row').style.display = discount > 0 ? 'flex' : 'none';
+  document.getElementById('p-disc').textContent = '−' + fmt(discount);
+  document.getElementById('p-gstpct').textContent = gstPct;
+  document.getElementById('p-gst').textContent = fmt(gstAmt);
+  document.getElementById('p-total').textContent = fmt(total);
+  document.getElementById('p-note').textContent = notes ? 'Note: ' + notes : '';
+
+  document.getElementById('invoice-paper').classList.add('show');
+  document.getElementById('save-inv-row').style.display = 'block';
+
+  pendingInvoice = { memberId, memberName, memberPhone, memberPlan, invoiceDate: invDate, dueDate: invDue, gstPct, discount, status, notes, subtotal, gstAmt, total };
+}
+
+async function saveInvoice() {
+  if (!pendingInvoice) return;
+  try {
+    await api('POST', '/api/invoices', pendingInvoice);
+    toast('Invoice saved to billing history');
+    document.getElementById('invoice-paper').classList.remove('show');
+    document.getElementById('save-inv-row').style.display = 'none';
+    pendingInvoice = null;
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ── History ────────────────────────────────────────────
+async function loadHistory() {
+  const [invoices, stats] = await Promise.all([api('GET', '/api/invoices'), api('GET', '/api/stats')]);
+  document.getElementById('h-total').textContent = stats.totalInvoices;
+  document.getElementById('h-collected').textContent = fmt(stats.collected);
+  document.getElementById('h-outstanding').textContent = fmt(stats.outstanding);
+
+  const tbody = document.getElementById('history-tbody');
+  const empty = document.getElementById('history-empty');
+  if (!invoices.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = invoices.slice().reverse().map(inv => `
+    <tr>
+      <td style="color:var(--text-dim)">INV-${String(inv.num).padStart(4,'0')}</td>
+      <td class="name">${inv.memberName}</td>
+      <td><span class="badge badge-${inv.memberPlan.toLowerCase()}">${inv.memberPlan}</span></td>
+      <td style="color:var(--text)">${fmt(inv.total)}</td>
+      <td style="color:var(--text-muted)">${fmtDate(inv.invoiceDate)}</td>
+      <td style="color:var(--text-muted)">${fmtDate(inv.dueDate)}</td>
+      <td>
+        <select class="badge" style="background:none;border:none;padding:3px 4px;font-size:11px;cursor:pointer;" onchange="updateInvoiceStatus('${inv.id}',this.value)">
+          ${['Paid','Pending','Overdue'].map(s => `<option value="${s}" ${inv.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><button class="btn btn-xs btn-danger" onclick="deleteInvoice('${inv.id}')"><i class="ti ti-trash"></i></button></td>
+    </tr>`).join('');
+}
+
+async function updateInvoiceStatus(id, status) {
+  await api('PUT', `/api/invoices/${id}`, { status });
+  toast('Status updated');
+  loadHistory();
+}
+
+async function deleteInvoice(id) {
+  const ok = await confirm('Delete invoice', 'Remove this invoice from history? This cannot be undone.');
+  if (!ok) return;
+  await api('DELETE', `/api/invoices/${id}`);
+  toast('Invoice deleted');
+  loadHistory();
+}
+
+// ── Init ───────────────────────────────────────────────
+document.getElementById('sidebar-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
+loadDashboard();
+</script>
+</body>
+</html>
