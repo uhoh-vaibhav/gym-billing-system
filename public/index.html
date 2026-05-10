@@ -569,13 +569,17 @@ function toast(msg, type = 'success') {
 }
 
 let confirmResolve = null;
-function confirm(title, msg) {
+function showConfirm(title, msg) {
   return new Promise(res => {
     confirmResolve = res;
     document.getElementById('confirm-title').textContent = title;
     document.getElementById('confirm-msg').textContent = msg;
     document.getElementById('confirm-overlay').classList.add('open');
-    document.getElementById('confirm-ok').onclick = () => { closeConfirm(); res(true); };
+    document.getElementById('confirm-ok').onclick = () => {
+      document.getElementById('confirm-overlay').classList.remove('open');
+      confirmResolve = null;
+      res(true);
+};
   });
 }
 function closeConfirm() {
@@ -725,7 +729,7 @@ async function toggleMemberStatus(id, current) {
 }
 
 async function deleteMember(id, name) {
-  const ok = await confirm('Delete member', `Remove "${name}" from the system? This cannot be undone.`);
+  const ok = await showConfirm('Delete member', `Remove "${name}" from the system? This cannot be undone.`);
   if (!ok) return;
   try {
     await api('DELETE', `/api/members/${id}`);
@@ -844,7 +848,7 @@ async function updateInvoiceStatus(id, status) {
 }
 
 async function deleteInvoice(id) {
-  const ok = await confirm('Delete invoice', 'Remove this invoice from history? This cannot be undone.');
+  const ok = await showConfirm('Delete invoice', 'Remove this invoice from history? This cannot be undone.');
   if (!ok) return;
   await api('DELETE', `/api/invoices/${id}`);
   toast('Invoice deleted');
