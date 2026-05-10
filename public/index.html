@@ -397,8 +397,7 @@ select option { background: var(--dark3); }
               <div class="form-group"><label>Due date</label><input type="date" id="inv-due"></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>GST (%)</label><input type="number" id="inv-gst" value="18" min="0" max="100"></div>
-              <div class="form-group"><label>Discount (₹)</label><input type="number" id="inv-discount" value="0" min="0"></div>
+              
             </div>
             <div class="form-row single">
               <div class="form-group">
@@ -450,8 +449,6 @@ select option { background: var(--dark3); }
             </table>
             <div class="inv-totals">
               <div class="inv-total-row"><span>Subtotal</span><span id="p-subtotal"></span></div>
-              <div class="inv-total-row" id="p-disc-row"><span>Discount</span><span id="p-disc"></span></div>
-              <div class="inv-total-row"><span>GST (<span id="p-gstpct"></span>%)</span><span id="p-gst"></span></div>
               <div class="inv-total-row final"><span>Total</span><span id="p-total"></span></div>
             </div>
             <div class="inv-note" id="p-note"></div>
@@ -763,14 +760,14 @@ function generateInvoice() {
 
   const invDate = document.getElementById('inv-date').value;
   const invDue = document.getElementById('inv-due').value;
-  const gstPct = parseFloat(document.getElementById('inv-gst').value) || 0;
-  const discount = parseFloat(document.getElementById('inv-discount').value) || 0;
+  const gstPct = 0;
+  const discount = 0;
   const status = document.getElementById('inv-status').value;
   const notes = document.getElementById('inv-notes').value.trim();
   const subtotal = memberPrice;
   const discounted = subtotal - discount;
-  const gstAmt = Math.round(discounted * gstPct / 100);
-  const total = discounted + gstAmt;
+  const gstAmt = 0;
+  const total = subtotal;
 
   const invNum = 'INV-' + String(Date.now()).slice(-6);
   document.getElementById('p-num').textContent = invNum;
@@ -798,7 +795,7 @@ function generateInvoice() {
   document.getElementById('invoice-paper').classList.add('show');
   document.getElementById('save-inv-row').style.display = 'block';
 
-  pendingInvoice = { memberId, memberName, memberPhone, memberPlan, invoiceDate: invDate, dueDate: invDue, gstPct, discount, status, notes, subtotal, gstAmt, total };
+  pendingInvoice = { memberId, memberName, memberPhone, memberPlan, invoiceDate: invDate, dueDate: invDue, gstPct : 0, discount : 0, status, notes, subtotal, gstAmt : 0, total };
 }
 
 async function saveInvoice() {
