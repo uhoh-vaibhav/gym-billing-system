@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Royal Fitness Club — Billing</title>
+<title>Gym Billing System</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
@@ -816,39 +816,43 @@ async function saveInvoice() {
 function printInvoice() {
   const content = document.getElementById('invoice-paper').innerHTML;
   const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Invoice — Royal Fitness Club</title>
+  win.document.write(`<!DOCTYPE html><html><head><title>Invoice</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; padding: 2.5rem; color: #1a1a1a; max-width: 720px; margin: auto; position: relative; }
+    @page {
+      size: A5;
+      margin: 1.2cm;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a1a; position: relative; }
     .watermark {
       position: fixed;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 420px; height: 420px;
+      width: 260px; height: 260px;
       opacity: 0.08;
       pointer-events: none;
       z-index: 0;
     }
     .invoice-content { position: relative; z-index: 1; }
-    .inv-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
-    .inv-brand { font-family: 'Playfair Display', serif; font-size: 22px; color: #1a1a1a; }
-    .inv-brand-sub { font-size: 12px; color: #888; margin-top: 3px; }
-    .inv-num { font-size: 24px; font-weight: 500; text-align: right; }
-    .inv-num-sub { font-size: 12px; color: #888; text-align: right; margin-top: 4px; }
-    .inv-parties { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
-    .inv-party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 6px; }
-    .inv-party-name { font-size: 15px; font-weight: 500; }
-    .inv-party-detail { font-size: 13px; color: #666; margin-top: 2px; }
-    .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-    .inv-table th { border-bottom: 1.5px solid #1a1a1a; padding: 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #555; }
-    .inv-table td { padding: 12px 0; border-bottom: 0.5px solid #eee; font-size: 13px; color: #333; }
+    .inv-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+    .inv-brand { font-family: 'Playfair Display', serif; font-size: 16px; color: #1a1a1a; }
+    .inv-brand-sub { font-size: 10px; color: #888; margin-top: 2px; }
+    .inv-num { font-size: 18px; font-weight: 500; text-align: right; }
+    .inv-num-sub { font-size: 10px; color: #888; text-align: right; margin-top: 3px; }
+    .inv-parties { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+    .inv-party-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 4px; }
+    .inv-party-name { font-size: 13px; font-weight: 500; }
+    .inv-party-detail { font-size: 11px; color: #666; margin-top: 2px; }
+    .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 0.8rem; }
+    .inv-table th { border-bottom: 1.5px solid #1a1a1a; padding: 6px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: #555; }
+    .inv-table td { padding: 8px 0; border-bottom: 0.5px solid #eee; font-size: 11px; color: #333; }
     .r { text-align: right; }
-    .inv-totals { border-top: 1.5px solid #1a1a1a; padding-top: 12px; }
-    .inv-total-row { display: flex; justify-content: flex-end; gap: 48px; font-size: 13px; color: #555; padding: 3px 0; }
-    .inv-total-row.final { font-size: 16px; font-weight: 600; color: #1a1a1a; padding-top: 8px; margin-top: 4px; border-top: 0.5px solid #eee; }
-    .inv-note { margin-top: 1.5rem; font-size: 12px; color: #888; border-top: 0.5px solid #eee; padding-top: 1rem; }
-    .inv-status-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; margin-top: 6px; }
+    .inv-totals { border-top: 1.5px solid #1a1a1a; padding-top: 8px; }
+    .inv-total-row { display: flex; justify-content: flex-end; gap: 36px; font-size: 11px; color: #555; padding: 2px 0; }
+    .inv-total-row.final { font-size: 13px; font-weight: 600; color: #1a1a1a; padding-top: 6px; margin-top: 3px; border-top: 0.5px solid #eee; }
+    .inv-note { margin-top: 1rem; font-size: 10px; color: #888; border-top: 0.5px solid #eee; padding-top: 0.8rem; }
+    .inv-status-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 500; margin-top: 4px; }
     .inv-status-paid { background: #e6f7ef; color: #1a7a4a; }
     .inv-status-pending { background: #fff7e6; color: #b06a10; }
     .inv-status-overdue { background: #fdf0f0; color: #c0392b; }
@@ -856,7 +860,7 @@ function printInvoice() {
       .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
     }
   </style></head><body>
-  <img src="/logo1.png" class="watermark" alt="">
+  <img src="/logo.png" class="watermark" alt="">
   <div class="invoice-content">${content}</div>
   </body></html>`);
   win.document.close();
