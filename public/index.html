@@ -512,9 +512,9 @@ select option { background: var(--dark3); }
       </div>
       <div style="margin-bottom:6px;"><label>Membership plan *</label></div>
       <div class="plan-grid">
-        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',8000)">
+        <div class="plan-card selected" onclick="pickPlan(this,'Monthly',5000)">
           <div class="pname">Monthly</div>
-          <div class="pprice">₹8,000</div>
+          <div class="pprice">₹5,000</div>
           <div class="pperiod">per month</div>
         </div>
         <div class="plan-card" onclick="pickPlan(this,'Quarterly',5799)">
@@ -555,7 +555,7 @@ select option { background: var(--dark3); }
 
 <script>
 const API = '';
-let selectedPlan = { name: 'Monthly', price: 8000 };
+let selectedPlan = { name: 'Monthly', price: 5000 };
 let pendingInvoice = null;
 
 // ── Utilities ──────────────────────────────────────────
@@ -676,7 +676,7 @@ function openAddMember() {
   document.getElementById('m-joindate').value = today();
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
   document.querySelector('.plan-card').classList.add('selected');
-  selectedPlan = { name: 'Monthly', price: 8000 };
+  selectedPlan = { name: 'Monthly', price: 5000 };
   openModal('modal-member');
 }
 
